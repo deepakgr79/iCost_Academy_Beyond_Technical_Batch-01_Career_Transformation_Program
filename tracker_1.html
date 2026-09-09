@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beyond Technical Momentum</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --paper: #f6f3ec;
+    --surface: #ffffff;
+    --panel: #eee9de;
+    --border: #d8d2c4;
+    --grid: #c9c2b0;
+    --ink: #1c2127;
+    --ink-dim: #5b6470;
+    --ink-faint: #8b8478;
+    --accent: #b6531c;
+    --accent-ink: #ffffff;
+    --good: #3f7d4a;
+    --good-bg: #e4efe4;
+    --warn: #93650a;
+    --warn-bg: #f3ecd7;
+    --critical: #b23a2e;
+    --critical-bg: #f5e2df;
+    --idle: #8b8478;
+    --idle-bg: #ece8dd;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #14181c;
+      --surface: #1b2126;
+      --panel: #202830;
+      --border: #313b41;
+      --grid: #2a333a;
+      --ink: #edf0f1;
+      --ink-dim: #9aa4ab;
+      --ink-faint: #6d777e;
+      --accent: #e08a4a;
+      --accent-ink: #14181c;
+      --good: #67b97a;
+      --good-bg: #1c2a20;
+      --warn: #d9a441;
+      --warn-bg: #2c2718;
+      --critical: #e0685a;
+      --critical-bg: #2e1d1c;
+      --idle: #7b858c;
+      --idle-bg: #20262b;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #14181c;
+    --surface: #1b2126;
+    --panel: #202830;
+    --border: #313b41;
+    --grid: #2a333a;
+    --ink: #edf0f1;
+    --ink-dim: #9aa4ab;
+    --ink-faint: #6d777e;
+    --accent: #e08a4a;
+    --accent-ink: #14181c;
+    --good: #67b97a;
+    --good-bg: #1c2a20;
+    --warn: #d9a441;
+    --warn-bg: #2c2718;
+    --critical: #e0685a;
+    --critical-bg: #2e1d1c;
+    --idle: #7b858c;
+    --idle-bg: #20262b;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 64px;
+  }
+
+  .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- Masthead ---------- */
+  .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+  }
+  .masthead h1 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 800;
+    font-size: clamp(26px, 4vw, 38px);
+    letter-spacing: -0.01em;
+    margin: 4px 0 6px;
+    text-wrap: balance;
+  }
+  .masthead .sub { color: var(--ink-dim); font-size: 14.5px; }
+  .masthead .sup { color: var(--ink-dim); font-size: 12.5px; }
+
+  .daybox {
+    text-align: right;
+    min-width: 220px;
+  }
+  .daybox .figure {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .daybox .label { font-size: 12px; color: var(--ink-dim); margin-top: 4px; }
+  .progress-track {
+    margin-top: 10px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 3px 0 0 3px; }
+
+  .status-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 26px;
+    font-size: 14px;
+  }
+  .status-banner strong { font-family: 'IBM Plex Mono', monospace; }
+
+  /* ---------- Rule plates ---------- */
+  .rules-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .rules-heading h2 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+  .rules-note { font-size: 12.5px; color: var(--ink-dim); }
+
+  .rule-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .rule-plate {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 14px 12px;
+    position: relative;
+  }
+  .rule-plate .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .rule-plate .metric {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    margin: 6px 0 3px;
+    color: var(--ink);
+  }
+  .rule-plate .metric span { color: var(--accent); }
+  .rule-plate .desc { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }
+
+  .external-note {
+    background: var(--critical-bg);
+    border: 1px solid color-mix(in srgb, var(--critical) 35%, var(--border));
+    color: var(--critical);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+  .external-note b { color: var(--critical); }
+
+  /* ---------- Leaderboard ---------- */
+  .board-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .board-heading h2 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 20px;
+    margin: 0 0 4px;
+  }
+  .board-heading .sub { font-size: 13px; color: var(--ink-dim); }
+
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 9px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: border-color .15s ease, transform .1s ease;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+  }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+  table { width: 100%; border-collapse: collapse; min-width: 880px; }
+  thead th {
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-dim);
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    position: sticky;
+    top: 0;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  thead th.sorted { color: var(--accent); }
+  thead th .arrow { font-size: 9px; margin-left: 3px; }
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--panel); }
+  td.rank { font-family: 'IBM Plex Mono', monospace; color: var(--ink-faint); width: 34px; }
+  td.name { font-weight: 600; }
+
+  .meter { display: flex; align-items: center; gap: 9px; }
+  .meter-track {
+    width: 84px;
+    height: 7px;
+    border-radius: 4px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .meter-fill { height: 100%; border-radius: 4px 0 0 4px; }
+  .meter-fill.good { background: var(--good); }
+  .meter-fill.warn { background: var(--warn); }
+  .meter-fill.critical { background: var(--critical); }
+  .meter-fill.idle { background: var(--idle); }
+  .meter-pct { font-family: 'IBM Plex Mono', monospace; font-size: 13px; width: 40px; }
+
+  .pill {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+  .pill.idle { background: var(--idle-bg); color: var(--idle); }
+
+  .cell-mono { font-family: 'IBM Plex Mono', monospace; color: var(--ink-dim); }
+
+  .methodology {
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 12px;
+    line-height: 1.6;
+    max-width: 760px;
+  }
+
+  /* ---------- Admin / setup ---------- */
+  details.admin {
+    margin-top: 46px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+  }
+  details.admin summary {
+    cursor: pointer;
+    padding: 14px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-dim);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  details.admin summary::-webkit-details-marker { display: none; }
+  details.admin summary::before { content: "▸"; font-size: 10px; }
+  details.admin[open] summary::before { content: "▾"; }
+  .admin-body { padding: 4px 20px 22px; }
+  .admin-body h3 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 14px;
+    margin: 18px 0 8px;
+  }
+  .admin-body p { font-size: 13px; color: var(--ink-dim); line-height: 1.6; margin: 6px 0; }
+  .field-list {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 0;
+    margin: 10px 0;
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 170px;
+    gap: 10px;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+    align-items: center;
+  }
+  .field-row:last-child { border-bottom: none; }
+  .field-row .n { font-family: 'IBM Plex Mono', monospace; color: var(--ink-faint); }
+  .field-row .type { font-family: 'IBM Plex Mono', monospace; color: var(--ink-dim); font-size: 11px; text-align: right; }
+  .steps { padding-left: 18px; font-size: 13px; color: var(--ink-dim); line-height: 1.8; }
+  .steps li::marker { font-family: 'IBM Plex Mono', monospace; color: var(--accent); }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (max-width: 860px) {
+    .rule-strip { grid-template-columns: repeat(2, 1fr); }
+    .masthead { flex-direction: column; align-items: flex-start; }
+    .daybox { text-align: left; width: 100%; }
+  }
+
+  .letterhead {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-badge {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 8px;
+    flex-shrink: 0;
+    line-height: 0;
+  }
+  .logo-badge img { display: block; height: 34px; width: auto; }
+  .leads {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+  .leads b { color: var(--ink); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="letterhead">
+    <div class="logo-badge"><img src="icost-academy-logo.png" alt="iCost Academy"></div>
+    <div class="leads">Program Chair: <b>M M Kuppusamy</b><br>Program Director: <b>Deepak Ramanathan</b></div>
+  </div>
+
+  <div class="masthead">
+    <div>
+      <div class="eyebrow">Beyond Technical™ · Batch 01 · Cohort of 16</div>
+      <h1>90-Day LinkedIn Momentum Tracker</h1>
+      <div class="sub">Cost engineering, should-costing, VAVE, sourcing &amp; procurement professionals — 10 Sep 2026 → 8 Dec 2026</div>
+    </div>
+    <div class="daybox">
+      <div class="figure" id="dayFigure">—</div>
+      <div class="label" id="dayLabel">loading program clock…</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="status-banner" id="statusBanner"></div>
+
+  <div class="rules-heading">
+    <h2>Daily &amp; periodic minimums</h2>
+    <div class="rules-note">Tracked per person, every day of the 90</div>
+  </div>
+  <div class="rule-strip">
+    <div class="rule-plate">
+      <div class="tag">Original posts</div>
+      <div class="metric"><span>1–2</span> / day</div>
+      <div class="desc">At least one self-written LinkedIn post daily. Two is the cap that counts.</div>
+    </div>
+    <div class="rule-plate">
+      <div class="tag">Long-form article</div>
+      <div class="metric"><span>1</span> / 10 days</div>
+      <div class="desc">One published LinkedIn article minimum inside every rolling 10-day block.</div>
+    </div>
+    <div class="rule-plate">
+      <div class="tag">Comments given</div>
+      <div class="metric"><span>5</span> / day</div>
+      <div class="desc">Thoughtful comments on five different posts — outside the cohort.</div>
+    </div>
+    <div class="rule-plate">
+      <div class="tag">Reposts / shares</div>
+      <div class="metric"><span>2</span> / day</div>
+      <div class="desc">Amplify two posts from your feed — outside the cohort.</div>
+    </div>
+    <div class="rule-plate">
+      <div class="tag">New connections</div>
+      <div class="metric"><span>5</span> / day</div>
+      <div class="desc">Five new connection requests sent to your extended network.</div>
+    </div>
+  </div>
+
+  <div class="external-note">
+    <b>External network only.</b> Comments, reposts and connection requests count only when directed outside the cohort. Engaging with a fellow Batch&nbsp;01 participant's post does not satisfy any of these minimums — the point of the exercise is to build reach into each person's own network, not to recycle activity inside the room.
+  </div>
+
+  <div class="board-heading">
+    <div>
+      <h2>Cohort leaderboard</h2>
+      <div class="sub" id="boardSub">Ranked by overall compliance since program start · scores only — post links stay private to each person</div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <a class="btn primary" href="index.html">✎ Log today's activity</a>
+      <button class="btn" id="exportBtn">⭳ Export standings (CSV)</button>
+    </div>
+  </div>
+
+  <div class="table-scroll">
+    <table id="board">
+      <thead>
+        <tr>
+          <th data-key="rank">#</th>
+          <th data-key="name">Participant</th>
+          <th data-key="compliance">Compliance</th>
+          <th data-key="posts">Posts logged</th>
+          <th data-key="articles">Articles (of expected)</th>
+          <th data-key="comments">Comments / day avg</th>
+          <th data-key="reposts">Reposts / day avg</th>
+          <th data-key="connections">Connections / day avg</th>
+          <th data-key="last">Last logged</th>
+        </tr>
+      </thead>
+      <tbody id="boardBody"></tbody>
+    </table>
+  </div>
+
+  <div class="methodology">
+    <strong>How compliance is scored —</strong> for each program day elapsed, a day counts as fully compliant when that day's log shows 1–2 posts, ≥5 external comments, ≥2 external reposts and ≥5 external connection requests. Compliance % = fully-compliant days ÷ days elapsed. Article cadence is tracked separately against the 1-per-10-days floor and doesn't affect the daily score. A dash means no log has been received yet.
+  </div>
+
+  <details class="admin">
+    <summary>Admin — how this stays up to date</summary>
+    <div class="admin-body">
+      <p>Every participant logs through the <em>“Log today's activity”</em> page above — a plain page, no Google sign-in, no Google Forms screen ever shown. Behind the scenes it writes into a private Google Sheet, invisibly, the moment someone submits.</p>
+      <p>This leaderboard's numbers are not pulled live from that sheet automatically — the sheet can't be fetched automatically from here. To refresh the standings, open this conversation and ask to pull the latest numbers; the sheet gets re-read and this page gets republished with updated figures. Do that as often as you'd like — weekly is plenty for a 90-day program.</p>
+      <p>The intake sheet lives in the Google account it was set up under. Nobody needs to open the sheet or the underlying form directly — this page and the log page are the only two surfaces anyone should ever use.</p>
+    </div>
+  </details>
+
+  <footer>
+    <span>Beyond Technical™ Batch 01</span>
+    <span id="footerStamp"></span>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var PROGRAM_START = new Date('2026-09-10T00:00:00+05:30');
+  var PROGRAM_DAYS = 90;
+  var PROGRAM_END = new Date(PROGRAM_START.getTime() + (PROGRAM_DAYS - 1) * 86400000);
+
+  var PARTICIPANTS = [
+    "Kiran Patil", "Zafer", "Manikandan", "Nitin", "Venkatesh",
+    "Baskar", "Mahantesh", "Lokesh", "Nirmal", "Prabhu",
+    "Pravin Mohite", "Abhinav", "Nagendra Teja", "Muthukumaran",
+    "Swati", "Kirubakaran"
+  ];
+
+  // Populated by the daily refresh once the Google Sheet is connected.
+  // Shape per day: { posts: n, comments: n, reposts: n, connections: n, article: bool }
+  var SUBMISSIONS = {};
+  var LAST_LOGGED = {};
+
+  function fmtDate(d) {
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function daysElapsed() {
+    var now = new Date();
+    var diff = Math.floor((startOfDay(now) - startOfDay(PROGRAM_START)) / 86400000);
+    return diff;
+  }
+  function startOfDay(d) { var c = new Date(d); c.setHours(0,0,0,0); return c; }
+
+  function renderClock() {
+    var elapsed = daysElapsed();
+    var fig = document.getElementById('dayFigure');
+    var lab = document.getElementById('dayLabel');
+    var fill = document.getElementById('progressFill');
+    var banner = document.getElementById('statusBanner');
+
+    if (elapsed < 0) {
+      fig.textContent = String(Math.abs(elapsed));
+      lab.textContent = Math.abs(elapsed) === 1 ? 'day until program opens' : 'days until program opens';
+      fill.style.width = '0%';
+      banner.innerHTML = 'Program opens <strong>' + fmtDate(PROGRAM_START) + '</strong>. This board is live and ready — standings populate once the first daily logs come in.';
+    } else if (elapsed > PROGRAM_DAYS - 1) {
+      fig.textContent = '90/90';
+      lab.textContent = 'program complete';
+      fill.style.width = '100%';
+      banner.innerHTML = 'Batch 01 closed on <strong>' + fmtDate(PROGRAM_END) + '</strong>. Figures below reflect the final refresh.';
+    } else {
+      var dayNo = elapsed + 1;
+      fig.textContent = dayNo + '/90';
+      lab.textContent = 'ends ' + fmtDate(PROGRAM_END);
+      fill.style.width = Math.round((dayNo / PROGRAM_DAYS) * 100) + '%';
+      banner.innerHTML = 'Day <strong>' + dayNo + ' of 90</strong> · ' + fmtDate(new Date()) + ' — refreshed from the daily intake sheet.';
+    }
+  }
+
+  function statsFor(name) {
+    var days = SUBMISSIONS[name] || {};
+    var keys = Object.keys(days);
+    var elapsed = Math.max(daysElapsed() + 1, 0); // program days that have happened, incl. today
+    if (elapsed <= 0) elapsed = 0;
+
+    var compliantDays = 0, totalPosts = 0, totalComments = 0, totalReposts = 0, totalConnections = 0, articles = 0;
+    keys.forEach(function (k) {
+      var d = days[k];
+      totalPosts += d.posts || 0;
+      totalComments += d.comments || 0;
+      totalReposts += d.reposts || 0;
+      totalConnections += d.connections || 0;
+      if (d.article) articles++;
+      var ok = (d.posts >= 1 && d.posts <= 2) && d.comments >= 5 && d.reposts >= 2 && d.connections >= 5;
+      if (ok) compliantDays++;
+    });
+
+    var loggedDays = keys.length;
+    var compliance = elapsed > 0 ? Math.round((compliantDays / elapsed) * 100) : null;
+    var expectedArticles = Math.floor(elapsed / 10);
+
+    return {
+      name: name,
+      compliance: compliance,
+      posts: totalPosts,
+      articles: articles,
+      expectedArticles: expectedArticles,
+      commentsAvg: loggedDays ? (totalComments / loggedDays) : null,
+      repostsAvg: loggedDays ? (totalReposts / loggedDays) : null,
+      connectionsAvg: loggedDays ? (totalConnections / loggedDays) : null,
+      last: LAST_LOGGED[name] || null,
+      loggedDays: loggedDays
+    };
+  }
+
+  function meterClass(pct) {
+    if (pct === null) return 'idle';
+    if (pct >= 80) return 'good';
+    if (pct >= 50) return 'warn';
+    return 'critical';
+  }
+
+  var sortState = { key: 'compliance', dir: 'desc' };
+
+  function render() {
+    renderClock();
+    var rows = PARTICIPANTS.map(statsFor);
+
+    rows.sort(function (a, b) {
+      var k = sortState.key;
+      var av = a[k], bv = b[k];
+      if (k === 'name') { av = a.name.toLowerCase(); bv = b.name.toLowerCase(); }
+      if (av === null && bv === null) return 0;
+      if (av === null) return 1;
+      if (bv === null) return -1;
+      if (av < bv) return sortState.dir === 'asc' ? -1 : 1;
+      if (av > bv) return sortState.dir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    var body = document.getElementById('boardBody');
+    body.innerHTML = '';
+    rows.forEach(function (r, i) {
+      var tr = document.createElement('tr');
+
+      var pctLabel = r.compliance === null ? '—' : r.compliance + '%';
+      var mClass = meterClass(r.compliance);
+      var fillWidth = r.compliance === null ? 0 : r.compliance;
+
+      tr.innerHTML =
+        '<td class="rank mono">' + (i + 1) + '</td>' +
+        '<td class="name">' + r.name + '</td>' +
+        '<td><div class="meter"><div class="meter-track"><div class="meter-fill ' + mClass + '" style="width:' + fillWidth + '%"></div></div><span class="meter-pct">' + pctLabel + '</span></div></td>' +
+        '<td class="cell-mono">' + (r.loggedDays ? r.posts : '—') + '</td>' +
+        '<td class="cell-mono">' + (r.expectedArticles > 0 || r.articles > 0 ? (r.articles + ' / ' + r.expectedArticles) : '—') + '</td>' +
+        '<td class="cell-mono">' + (r.commentsAvg === null ? '—' : r.commentsAvg.toFixed(1)) + '</td>' +
+        '<td class="cell-mono">' + (r.repostsAvg === null ? '—' : r.repostsAvg.toFixed(1)) + '</td>' +
+        '<td class="cell-mono">' + (r.connectionsAvg === null ? '—' : r.connectionsAvg.toFixed(1)) + '</td>' +
+        '<td class="cell-mono">' + (r.last ? r.last : (r.loggedDays ? '—' : '<span class="pill idle">no log yet</span>')) + '</td>';
+      body.appendChild(tr);
+    });
+
+    document.querySelectorAll('#board thead th').forEach(function (th) {
+      th.classList.toggle('sorted', th.dataset.key === sortState.key);
+      var arrow = th.querySelector('.arrow');
+      if (arrow) arrow.remove();
+      if (th.dataset.key === sortState.key) {
+        var span = document.createElement('span');
+        span.className = 'arrow';
+        span.textContent = sortState.dir === 'asc' ? '▲' : '▼';
+        th.appendChild(span);
+      }
+    });
+  }
+
+  document.querySelectorAll('#board thead th').forEach(function (th) {
+    th.addEventListener('click', function () {
+      var key = th.dataset.key;
+      if (sortState.key === key) {
+        sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortState.key = key;
+        sortState.dir = key === 'name' ? 'asc' : 'desc';
+      }
+      render();
+    });
+  });
+
+  function toCSV() {
+    var header = ['Rank','Participant','Compliance %','Posts logged','Articles','Expected articles','Comments/day avg','Reposts/day avg','Connections/day avg','Last logged'];
+    var rows = PARTICIPANTS.map(statsFor).sort(function(a,b){
+      var av = a.compliance === null ? -1 : a.compliance;
+      var bv = b.compliance === null ? -1 : b.compliance;
+      return bv - av;
+    });
+    var lines = [header.join(',')];
+    rows.forEach(function (r, i) {
+      lines.push([
+        i + 1,
+        '"' + r.name + '"',
+        r.compliance === null ? '' : r.compliance,
+        r.posts,
+        r.articles,
+        r.expectedArticles,
+        r.commentsAvg === null ? '' : r.commentsAvg.toFixed(1),
+        r.repostsAvg === null ? '' : r.repostsAvg.toFixed(1),
+        r.connectionsAvg === null ? '' : r.connectionsAvg.toFixed(1),
+        r.last || ''
+      ].join(','));
+    });
+    return lines.join('\n');
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    var csv = toCSV();
+    var stamp = new Date().toISOString().slice(0,10);
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'beyond-technical-standings-' + stamp + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  });
+
+  document.getElementById('footerStamp').textContent = 'Page rendered ' + new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
