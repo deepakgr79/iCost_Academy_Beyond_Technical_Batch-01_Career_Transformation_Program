@@ -2,8 +2,10 @@
 ### 90-Day LinkedIn Momentum System
 
 **iCost Academy** · School of Cost & Value Engineering
-Program Chair: **M M Kuppusamy** · Program Director: **Deepak Ramanathan**
-Program dates: **10 Sep 2026 – 8 Dec 2026** · Cohort of 16
+Program Chair: **M M Kuppusamy**
+Program Director: **Deepak Ramanathan**
+Program dates: **10 Sep 2026 – 8 Dec 2026**
+Cohort of 16
 
 ---
 
